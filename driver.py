@@ -67,6 +67,7 @@ class Channel(Uploader):
                     super().upload_sql(headlines, self.channel, section)
                     time.sleep(random.randint(100, 300))
                     self.restart_driver()
+        self.quit_driver()
 
     def call_driver(self):
         self.driver = webdriver.Chrome(options=self.copt)
