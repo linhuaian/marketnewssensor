@@ -60,12 +60,13 @@ class Channel(Uploader):
             else:
                 self.driver.get(f"{self.url}{section}")
             time.sleep(random.randint(1, 50) * 0.1)
-            for news_attr, news_attr_name in self.news_attr_dict.items():
-                headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
-                headlines = [x.text for x in headlines if x.text]
-                super().upload_sql(headlines, self.channel, section)
-                time.sleep(random.randint(100, 300))
-                self.restart_driver()
+            for news_attr, news_attr_names in self.news_attr_dict.items():
+                for news_attr_name in news_attr_names:
+                    headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
+                    headlines = [x.text for x in headlines if x.text]
+                    super().upload_sql(headlines, self.channel, section)
+                    time.sleep(random.randint(100, 300))
+                    self.restart_driver()
 
     def call_driver(self):
         self.driver = webdriver.Chrome(options=self.copt)
