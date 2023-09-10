@@ -36,8 +36,42 @@ class Uploader:
         headlines = [f'("{date}", "{week}", "{time}", "{headline}", "{channel}", "{section}")' for headline in headlines]
         statement = statement + ",".join(headlines)
         query("other", statement)
-
         pass
+
+
+class Channel(Uploader):
+
+    RESULT = []
+
+    def __init__(self, channel, url, sections, news_attr, news_attr_name):
+        self.channel = channel
+        self.url = url
+        self.sections = sections
+        self.news_attr = news_attr
+        self.news_attr_name = news_attr_name
+        self.driver = webdriver.Chrome(options=chrome_options)
+        super().__init__(query)
+
+    def scrap_content(self):
+        random.shuffle(self.sections)
+        print(self.sections)
+        for section in self.sections:
+            if section == "main":
+                self.driver.get(f"{self.url}")
+            else:
+                self.driver.get(f"{self.url}{section}")
+            time.sleep(random.randint(1, 50) * 0.1)
+            headlines = self.driver.find_elements_by_xpath(f'//*[@{self.news_attr}="{self.news_attr_name}"]')
+            headlines = [x.text for x in headlines if x.text]
+            super().upload_sql(headlines, self.channel, section)
+            time.sleep(random.randint(100, 300))
+            self.restart_driver()
+
+    def restart_driver(self):
+        self.driver.quit()
+        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": f"{random.choice(agents)}",
+                                                                    "platform": "Windows"})  # Randomize user agent
 
 class Wsj(Uploader):
     RESULT = []
@@ -105,10 +139,15 @@ class Bloomberg(Uploader):
 
 def scrap():
     try:
-        wsj = Wsj()
-        wsj.scrap_content()
-        bg = Bloomberg()
-        bg.scrap_content()
+        channels = []
+        wsj = Channel("Wsj",
+                      "https://www.wsj.com/",
+                      ["economy", "markets"],
+                      "class",
+                      "WSJTheme--headlineText--He1ANr9C ")
+        channels.append(wsj)
+        for chan in channels:
+            chan.scrap_content()
 
         print("Scrap done!")
     except Exception as e:
