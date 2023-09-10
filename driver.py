@@ -27,27 +27,26 @@ class Uploader:
         print(f"Number of headlines is {len(headlines)}")
         dt = datetime.now().replace(tzinfo=timezone.utc)
         date = dt.strftime('%Y-%m-%d')
-        time = dt.strftime('%H:%M:%S')
+        timestamp = dt.strftime('%H:%M:%S')
         week = dt.strftime("%V")
         headlines = [headline.replace('"', "'") for headline in headlines]
         statement = "insert ignore into headlines (date, week, time, headline, news_channel, section) values "
-        headlines = [f'("{date}", "{week}", "{time}", "{headline}", "{channel}", "{section}")' for headline in
+        headlines = [f'("{date}", "{week}", "{timestamp}", "{headline}", "{channel}", "{section}")' for headline in
                      headlines]
         statement = statement + ",".join(headlines)
-        query("other", statement)
+        self.query("other", statement)
         pass
 
 
 class Channel(Uploader):
     RESULT = []
 
-    def __init__(self, channel, url, sections, news_attr, news_attr_name, copt=chrome_options):
+    def __init__(self, channel, url, sections, news_attr_dict, copt=chrome_options):
         self.driver = None
         self.channel = channel
         self.url = url
         self.sections = sections
-        self.news_attr = news_attr
-        self.news_attr_name = news_attr_name
+        self.news_attr_dict = news_attr_dict
         self.copt = copt
         super().__init__(query)
 
@@ -61,11 +60,12 @@ class Channel(Uploader):
             else:
                 self.driver.get(f"{self.url}{section}")
             time.sleep(random.randint(1, 50) * 0.1)
-            headlines = self.driver.find_elements_by_xpath(f'//*[@{self.news_attr}="{self.news_attr_name}"]')
-            headlines = [x.text for x in headlines if x.text]
-            super().upload_sql(headlines, self.channel, section)
-            time.sleep(random.randint(100, 300))
-            self.restart_driver()
+            for news_attr, news_attr_name in self.news_attr_dict.items():
+                headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
+                headlines = [x.text for x in headlines if x.text]
+                super().upload_sql(headlines, self.channel, section)
+                time.sleep(random.randint(100, 300))
+                self.restart_driver()
 
     def call_driver(self):
         self.driver = webdriver.Chrome(options=self.copt)
