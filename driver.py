@@ -84,7 +84,7 @@ class Channel(Uploader):
 
 def scrap():
     try:
-        channels = [Channel(x[0], x[1], x[2], x[3], x[4]) for x in news_channels]
+        channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
         for chan in channels:
             chan.scrap_content()
         print("Scrap done!")
