@@ -72,10 +72,11 @@ class Channel(Uploader):
 
     def quit_driver(self):
         self.driver.quit()
+        self.driver = None
 
     def restart_driver(self):
         if self.driver:
-            self.driver.quit_driver()
+            self.quit_driver()
             self.call_driver()
             self.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": f"{random.choice(agents)}",
                                                                          "platform": "Windows"})  # Randomize user agent
