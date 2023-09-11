@@ -28,14 +28,14 @@ class Uploader:
         self.query = q
         pass
 
-    def upload_sql(self, headlines, channel, section):
+    def upload_sql(self, headlines, channel, section, news_attr):
         print(f"Number of headlines is {len(headlines)}")
         dt = datetime.now().replace(tzinfo=timezone.utc)
         date = dt.strftime('%Y-%m-%d')
         timestamp = dt.strftime('%H:%M:%S')
         week = dt.strftime("%V")
         headlines = [headline.replace('"', "'") for headline in headlines]
-        headlines = [[date, week, timestamp, headline, channel, section] for headline in headlines]
+        headlines = [[date, week, timestamp, headline, channel, section, news_attr] for headline in headlines]
         dataframe = pd.DataFrame(headlines)
         dataframe.columns = output_columns
         self.query(dataframe)
@@ -75,7 +75,7 @@ class Channel(Uploader):
                     for news_attr_name in news_attr_names:
                         headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
                         headlines = [x.text for x in headlines if x.text]
-                        super().upload_sql(headlines, self.channel, section)
+                        super().upload_sql(headlines, self.channel, section, f"{news_attr}:{news_attr_name}")
                         time.sleep(random.randint(100, 300))
                         self.restart_driver()
             except Exception as e:
