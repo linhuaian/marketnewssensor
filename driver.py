@@ -1,11 +1,12 @@
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from datetime import datetime, timezone
-from config import news_channels
+from config import news_channels, output_columns
 from user_agents import agents
 from query import query
 import random
 import time
+import pandas as pd
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
@@ -32,11 +33,10 @@ class Uploader:
         timestamp = dt.strftime('%H:%M:%S')
         week = dt.strftime("%V")
         headlines = [headline.replace('"', "'") for headline in headlines]
-        statement = "insert ignore into headlines (date, week, time, headline, news_channel, section) values "
-        headlines = [f'("{date}", "{week}", "{timestamp}", "{headline}", "{channel}", "{section}")' for headline in
-                     headlines]
-        statement = statement + ",".join(headlines)
-        self.query("other", statement)
+        headlines = [[date, week, timestamp, headline, channel, section] for headline in headlines]
+        dataframe = pd.DataFrame(headlines)
+        dataframe.columns = output_columns
+        self.query(dataframe)
         pass
 
 
