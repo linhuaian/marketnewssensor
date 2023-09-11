@@ -1,9 +1,10 @@
 import os
-import datetime as dt
+from datetime import datetime, timezone
 import pandas as pd
 
 
 def query(dataframe):
+    dt = datetime.now().replace(tzinfo=timezone.utc)
     year = dt.strftime('%Y')
     week = dt.strftime("%V")
     file_name = f"News_Week_{week}_{year}.csv"
