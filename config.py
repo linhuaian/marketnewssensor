@@ -11,7 +11,7 @@ news_channels = [
      {"class": ["css-dihi6s", "css-1wlqxh"]}),
     # Separator
     ("ChinaDaily", "https://www.chinadaily.com.cn/", ["main"],
-     {"target": ["_blank"], "class": ["txt1"]}),
+     {"target": ["_blank"], "class": ["txt1", "txt2"]}),
     # Separator
     ("JapanTimes", "https://www.japantimes.co.jp/", ["main"],
      {}),
