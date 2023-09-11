@@ -21,7 +21,9 @@ chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
 
 
 class Uploader:
-
+    """
+    A class to upload the news to our local csv
+    """
     def __init__(self, q):
         self.query = q
         pass
@@ -41,6 +43,10 @@ class Uploader:
 
 
 class Channel(Uploader):
+    """
+    A channel object. Simply change channel, url, section, news_attr_dict to scrap the news from different channels.
+    Modified the channel in config.py, following format of previous channels strictly.
+    """
     RESULT = []
 
     def __init__(self, channel, url, sections, news_attr_dict, copt=chrome_options):

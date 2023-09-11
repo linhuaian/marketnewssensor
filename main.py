@@ -4,6 +4,10 @@ import time
 
 
 def marketsensor():
+    """
+    Just a code to run the scrapper at 1 hour basis.
+    :return:
+    """
     print("Scrap Schedule Fired")
     scrap()
     schedule.every(1).hours.do(scrap)
