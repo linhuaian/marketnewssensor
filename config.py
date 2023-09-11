@@ -1,6 +1,6 @@
 # Add in format of the news channels as follows: (<Channel Name>, <Channel website>, <Sections of the channel to
 # scrap>, <Attribute name of HTML element>, <Attribute content>)
-output_columns = ["headline_id","date", "time", "week", "headline", "news_channel",	"section"]
+output_columns = ["date", "time", "week", "headline", "news_channel",	"section"]
 news_channels = [
     ("SCMP", "https://www.scmp.com/", ["main", "int-1"],
      {"class": ["article__link", "article-title__article-link article-link"]}),
