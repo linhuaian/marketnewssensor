@@ -1,3 +1,5 @@
 # ignore directories
 __pycache__/
 *.env
+chromedriver.exe
+chromedriver

@@ -7,6 +7,9 @@ from query import query
 import random
 import time
 import pandas as pd
+import os
+
+PROJECT_ROOT = os.path.abspath(os.getcwd())
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
@@ -84,7 +87,12 @@ class Channel(Uploader):
         self.quit_driver()
 
     def call_driver(self):
-        self.driver = webdriver.Chrome(options=self.copt)
+        """
+        Choose different lines for different version of OS
+        :return:
+        """
+        self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
+        #self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver") # mac OS
 
     def quit_driver(self):
         self.driver.quit()
