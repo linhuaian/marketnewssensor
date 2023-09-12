@@ -80,10 +80,10 @@ class Channel(Uploader):
                         headlines = [x.text for x in headlines if x.text]
                         super().upload_sql(headlines, self.channel, section, f"{news_attr}:{news_attr_name}")
                         time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
-                        self.restart_driver()
             except Exception as e:
                 print(str(e))
                 continue
+            self.restart_driver() # Restart driver for each section with different user
         self.quit_driver()
 
     def call_driver(self):
@@ -92,7 +92,7 @@ class Channel(Uploader):
         :return:
         """
         self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
-        #self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver") # mac OS
+        # self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver") # mac OS
 
     def quit_driver(self):
         self.driver.quit()
