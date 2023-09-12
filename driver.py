@@ -72,14 +72,14 @@ class Channel(Uploader):
                 self.driver.get(f"{self.url}")
             else:
                 self.driver.get(f"{self.url}{section}")
-            time.sleep(random.randint(1, 50) * 0.1)
+            time.sleep(random.randint(1, 50) * 0.1)  # Time interval is random so that we act like real human being
             try:
                 for news_attr, news_attr_names in self.news_attr_dict.items():
                     for news_attr_name in news_attr_names:
                         headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
                         headlines = [x.text for x in headlines if x.text]
                         super().upload_sql(headlines, self.channel, section, f"{news_attr}:{news_attr_name}")
-                        time.sleep(random.randint(100, 300))
+                        time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
                         self.restart_driver()
             except Exception as e:
                 print(str(e))
