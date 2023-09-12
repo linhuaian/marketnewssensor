@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timezone
 import pandas as pd
+from config import output_columns
 
 
 def query(dataframe):
@@ -15,7 +16,7 @@ def query(dataframe):
     file_name = f"news/news_week_{week}_{year}.csv"
     if os.path.exists(file_name):
         # dataframe.to_csv(file_name, mode='a', header=None, index=False)
-        dataframe = pd.concat([pd.read_csv(file_name, index_col="index"), dataframe], ignore_index=True)
+        dataframe = pd.concat([pd.read_csv(file_name, usecols=output_columns), dataframe], ignore_index=True)
         dataframe = dataframe.drop_duplicates(subset=["week", "headline", "news_channel"])
         dataframe.to_csv(file_name)
     else:
