@@ -17,8 +17,7 @@ def query(dataframe):
     if os.path.exists(file_name):
         # dataframe.to_csv(file_name, mode='a', header=None, index=False)
         dataframe = pd.concat([pd.read_csv(file_name, usecols=output_columns), dataframe], ignore_index=True)
-        dataframe.to_csv("test.csv")
         dataframe.drop_duplicates(subset=["week", "headline", "news_channel"], inplace=True, keep="first")
-        dataframe.to_csv(file_name)
+        dataframe.to_csv(file_name, index=False)
     else:
         dataframe.to_csv(file_name, index=False)
