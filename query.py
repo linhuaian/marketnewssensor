@@ -14,7 +14,9 @@ def query(dataframe):
     week = dt.strftime("%V")
     file_name = f"news/news_week_{week}_{year}.csv"
     if os.path.exists(file_name):
-        #dataframe.to_csv(file_name, mode='a', header=None, index=False)
-        pd.concat([pd.read_csv(file_name), dataframe], ignore_index=True).drop_duplicates(subset=["week", "headline", "news_channel"]).to_csv(file_name)
+        # dataframe.to_csv(file_name, mode='a', header=None, index=False)
+        dataframe = pd.concat([pd.read_csv(file_name), dataframe], ignore_index=True)
+        dataframe = dataframe.drop_duplicates(subset=["week", "headline", "news_channel"])
+        dataframe.to_csv(file_name)
     else:
         dataframe.to_csv(file_name, index=False)
