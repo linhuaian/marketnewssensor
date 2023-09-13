@@ -18,7 +18,9 @@ def query(dataframe):
         # dataframe.to_csv(file_name, mode='a', header=None, index=False)
         new_dataframe = pd.concat([pd.read_csv(file_name, usecols=output_columns), dataframe], ignore_index=True)
         unique_dataframe = new_dataframe.drop_duplicates(subset=["week", "headline", "news_channel"], keep="first")
-        unique_dataframe.drop_duplicates(subset=["week", "headline", "news_channel"], keep="first").to_csv(file_name,
-                                                                                                           index=False)
+        unique_dataframe.to_csv(file_name, index=False)
+        # Read file and drop duplicates one more time to enhance duplicate drop
+        pd.read_csv(file_name, usecold=output_columns).drop_duplicates(subset=["week", "headline", "news_channel"],
+                                                                       keep="first").to_csv(file_name)
     else:
         dataframe.to_csv(file_name, index=False)
