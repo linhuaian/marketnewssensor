@@ -24,24 +24,22 @@ chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
 
 
 class Uploader:
-    """
-    A class to upload the news to our local csv
-    """
+
     def __init__(self, q):
         self.query = q
         pass
 
-    def upload_sql(self, headlines, channel, section, news_attr):
+    def upload_sql(self, headlines, channel, section):
         print(f"Number of headlines is {len(headlines)}")
         dt = datetime.now().replace(tzinfo=timezone.utc)
         date = dt.strftime('%Y-%m-%d')
-        timestamp = dt.strftime('%H:%M:%S')
+        time = dt.strftime('%H:%M:%S')
         week = dt.strftime("%V")
         headlines = [headline.replace('"', "'") for headline in headlines]
-        headlines = [[date, week, timestamp, headline, channel, section, news_attr] for headline in headlines]
-        dataframe = pd.DataFrame(headlines)
-        dataframe.columns = output_columns
-        self.query(dataframe)
+        statement = "insert ignore into headlines (date, week, time, headline, news_channel, section) values "
+        headlines = [f'("{date}", "{week}", "{time}", "{headline}", "{channel}", "{section}")' for headline in headlines]
+        statement = statement + ",".join(headlines)
+        self.query("other", statement)
         pass
 
 
