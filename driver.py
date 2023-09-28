@@ -79,7 +79,7 @@ class Channel(Uploader):
                         headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]') # For
                         # selenium > 4.7.2
                         headlines = [x.text for x in headlines if x.text]
-                        super().upload_sql(headlines, self.channel, section, f"{news_attr}:{news_attr_name}")
+                        super().upload_sql(headlines, self.channel, section)
                         time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
             except Exception as e:
                 print(str(e))
