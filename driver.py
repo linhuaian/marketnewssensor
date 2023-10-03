@@ -20,7 +20,8 @@ chrome_options.add_argument('start-maximized')
 chrome_options.add_argument('disable-infobars')
 chrome_options.add_argument('--disable-extensions')
 chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', "enable-logging"])
+chrome_options.add_argument("--log-level=3")
 
 
 class Uploader:
@@ -110,6 +111,7 @@ class Channel(Uploader):
 def scrap():
     try:
         channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
+        random.shuffle(channels)
         for chan in channels:
             chan.scrap_content()
         print("Scrap done!")
