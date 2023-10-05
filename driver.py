@@ -62,22 +62,21 @@ class Channel(Uploader):
         self.copt = copt
         super().__init__(query)
 
-    def scrap_content(self):
-        self.call_driver()
+    def scrap_content(self, driver):
         random.shuffle(self.sections)
         print(self.sections)
         for section in self.sections:
             if section == "main":
-                self.driver.get(f"{self.url}")
+                driver.get(f"{self.url}")
             else:
-                self.driver.get(f"{self.url}{section}")
+                driver.get(f"{self.url}{section}")
             time.sleep(random.randint(1, 50) * 0.1)  # Time interval is random so that we act like real human being
             try:
                 for news_attr, news_attr_names in self.news_attr_dict.items():
                     for news_attr_name in news_attr_names:
                         # headlines = self.driver.find_elements("xpath", f'//*[@{news_attr}="{news_attr_name}"]') #
                         # For selenium <= 4.7.2
-                        headlines = self.driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]') # For
+                        headlines = driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]') # For
                         # selenium > 4.7.2
                         headlines = [x.text for x in headlines if x.text]
                         super().upload_sql(headlines, self.channel, section)
@@ -85,8 +84,6 @@ class Channel(Uploader):
             except Exception as e:
                 print(str(e))
                 continue
-            self.restart_driver() # Restart driver for each section with different user
-        self.quit_driver()
 
     def call_driver(self):
         """
@@ -112,8 +109,10 @@ def scrap():
     try:
         channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
         random.shuffle(channels)
+        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
         for chan in channels:
-            chan.scrap_content()
+            chan.scrap_content(driver)
+        driver.quit()
         print("Scrap done!")
     except Exception as e:
         print(str(e))
