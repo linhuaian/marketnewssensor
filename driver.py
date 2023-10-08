@@ -95,7 +95,12 @@ def scrap():
         random.shuffle(channels)
         driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
         for chan in channels:
-            chan.scrap_content(driver)
+            try:
+                chan.scrap_content(driver)
+            except Exception as e:
+                print(str(e))
+                driver.quit()
+                driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
         driver.quit()
         print("Scrap done!")
     except Exception as e:
