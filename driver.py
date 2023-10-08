@@ -86,7 +86,7 @@ class Channel(Uploader):
                         super().upload_sql(headlines, self.channel, section)
                         time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
                     except Exception as e:
-                        print(f"Loading timeout for {self.channel} {news_attr}: {str(e)[:10]}...")
+                        print(f"Loading timeout for {self.channel} {news_attr}: {str(e)[:50]}...")
                         continue
 
 def scrap():
