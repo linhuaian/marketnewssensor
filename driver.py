@@ -1,4 +1,8 @@
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
 from datetime import datetime, timezone
 from config import news_channels, output_columns
@@ -6,7 +10,6 @@ from user_agents import agents
 from query import query
 import random
 import time
-import pandas as pd
 import os
 
 PROJECT_ROOT = os.path.abspath(os.getcwd())
@@ -66,50 +69,31 @@ class Channel(Uploader):
         random.shuffle(self.sections)
         print(self.sections)
         for section in self.sections:
+            if not self.url:
+                print(f"URL has problem for {self.channel}")
+                break
             if section == "main":
                 driver.get(f"{self.url}")
             else:
                 driver.get(f"{self.url}{section}")
             time.sleep(random.randint(1, 50) * 0.1)  # Time interval is random so that we act like real human being
-            try:
-                for news_attr, news_attr_names in self.news_attr_dict.items():
-                    for news_attr_name in news_attr_names:
-                        # headlines = self.driver.find_elements("xpath", f'//*[@{news_attr}="{news_attr_name}"]') #
-                        # For selenium <= 4.7.2
-                        headlines = driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]') # For
-                        # selenium > 4.7.2
+            for news_attr, news_attr_names in self.news_attr_dict.items():
+                for news_attr_name in news_attr_names:
+                    try:
+                        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, f'//*[@{news_attr}="{news_attr_name}"]')))
+                        headlines = driver.find_elements_by_xpath(f'//*[@{news_attr}="{news_attr_name}"]')
                         headlines = [x.text for x in headlines if x.text]
                         super().upload_sql(headlines, self.channel, section)
                         time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
-            except Exception as e:
-                print(str(e))
-                continue
-
-    def call_driver(self):
-        """
-        Choose different lines for different version of OS
-        :return:
-        """
-        self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
-        # self.driver = webdriver.Chrome(options=self.copt, executable_path=f"{PROJECT_ROOT}/chromedriver") # mac OS
-
-    def quit_driver(self):
-        self.driver.quit()
-        self.driver = None
-
-    def restart_driver(self):
-        if self.driver:
-            self.quit_driver()
-            self.call_driver()
-            self.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": f"{random.choice(agents)}",
-                                                                         "platform": "Windows"})  # Randomize user agent
-
+                    except Exception as e:
+                        print(f"Loading timeout for {self.channel} {news_attr}: {str(e)[:10]}...")
+                        continue
 
 def scrap():
     try:
         channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
         random.shuffle(channels)
-        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
+        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver")
         for chan in channels:
             chan.scrap_content(driver)
         driver.quit()

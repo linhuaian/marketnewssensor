@@ -2,11 +2,11 @@
 # scrap>, <Attribute name of HTML element>, <Attribute content>)
 output_columns = ["date", "week", "time", "headline", "news_channel", "section", "headline_attributes"]
 news_channels = [
-    ("SCMP", "https://www.scmp.com/", ["main", "economy/global-economy"],
-     {"class": ["article__link", "article-title__article-link article-link"]}),
-    # Seperator
     ("Bloomberg", "https://www.bloomberg.com/", ["economics", "markets"],
      {"data-component": ["headline"]}),
+    # Seperator
+    ("SCMP", "https://www.scmp.com/", ["main", "economy/global-economy"],
+     {"class": ["article__link", "article-title__article-link article-link"]}),
     # Seperator
     ("Wsj", "https://www.wsj.com/", ["economy", "markets"],
      {"class": ["css-dihi6s", "css-1wlqxh"]}),
