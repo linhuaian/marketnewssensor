@@ -93,7 +93,7 @@ def scrap():
     try:
         channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
         random.shuffle(channels)
-        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver")
+        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
         for chan in channels:
             chan.scrap_content(driver)
         driver.quit()
