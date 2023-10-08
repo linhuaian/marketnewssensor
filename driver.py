@@ -12,7 +12,7 @@ import os
 PROJECT_ROOT = os.path.abspath(os.getcwd())
 
 chrome_options = Options()
-# chrome_options.add_argument('--headless')
+chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument(f"window-size={random.randint(500, 1000)},{random.randint(500, 1000)}")
 chrome_options.add_argument(f"user-agent={random.choice(agents)}")
