@@ -1,4 +1,4 @@
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -14,17 +14,12 @@ import os
 
 PROJECT_ROOT = os.path.abspath(os.getcwd())
 
-chrome_options = Options()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--disable-gpu')
-chrome_options.add_argument(f"window-size={random.randint(500, 1000)},{random.randint(500, 1000)}")
-chrome_options.add_argument(f"user-agent={random.choice(agents)}")
-chrome_options.add_argument('start-maximized')
-chrome_options.add_argument('disable-infobars')
-chrome_options.add_argument('--disable-extensions')
-chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', "enable-logging"])
-chrome_options.add_argument("--log-level=3")
+options = FirefoxOptions()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+prefs = {"credentials_enable_service": False,
+         "profile.password_manager_enabled": False}
+
 
 
 class Uploader:
@@ -54,7 +49,7 @@ class Channel(Uploader):
     """
     RESULT = []
 
-    def __init__(self, channel, url, sections, news_attr_dict, copt=chrome_options):
+    def __init__(self, channel, url, sections, news_attr_dict, copt=options):
         if not sections:
             sections = ["main"]
         self.driver = None
@@ -86,21 +81,21 @@ class Channel(Uploader):
                         super().upload_sql(headlines, self.channel, section)
                         time.sleep(random.randint(10, 30))    # Time interval is random so that we act like real human
                     except Exception as e:
-                        print(f"Loading timeout for {self.channel} {news_attr}: {str(e)[:50]}...")
+                        print(f"Loading timeout for {self.channel} {news_attr}: {str(e)}...")
                         continue
 
 def scrap():
     try:
         channels = [Channel(x[0], x[1], x[2], x[3]) for x in news_channels]
         random.shuffle(channels)
-        driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
+        driver = webdriver.Firefox(options=options, executable_path=f"{PROJECT_ROOT}/geckodriver")
         for chan in channels:
             try:
                 chan.scrap_content(driver)
             except Exception as e:
                 print(str(e))
                 driver.quit()
-                driver = webdriver.Chrome(options=chrome_options, executable_path=f"{PROJECT_ROOT}/chromedriver.exe")
+                driver = webdriver.Firefox(options=options, executable_path=f"{PROJECT_ROOT}/geckodriver")
         driver.quit()
         print("Scrap done!")
     except Exception as e:
